@@ -1,23 +1,21 @@
-import { useEffect, useState } from 'react';
+
+import { useDispatch, useSelector } from 'react-redux';
 import ContactForm from './ContactForm/ContactForm';
 import ContactList from './ContactList/ContactList';
 import Filter from './Filter/Filter';
 
+import { addContact, deleteContact, setFilter } from 'redux/contactsSlice';
+
 export default function App() {
-  const [contacts, setContacts] = useState(() => {
-    return JSON.parse(window.localStorage.getItem('contacts') ?? '[]');
-  });
+  const contacts = useSelector(state => state.contactsData.contacts);
+ 
+  const filter = useSelector(state => state.contactsData.filter);
 
-  const [filter, setFilter] = useState('');
-
-
-
-  useEffect (()=> {
-    window.localStorage.setItem('contacts', JSON.stringify(contacts))
-  },[contacts])
+  const dispatch = useDispatch();
 
 
-  const addContact = newContact => {
+
+  const onAddContact = newContact => {
     const isInContacts = contacts.some(
       ({ name }) => name.toLowerCase() === newContact.name.toLowerCase()
     );
@@ -27,16 +25,15 @@ export default function App() {
       return;
     }
 
-    setContacts([newContact, ...contacts])
+    dispatch(addContact(newContact))
   };
 
-  const deleteContact = id => {
-
-    setContacts(contacts => contacts.filter(contact => contact.id !== id), )
+  const onDeleteContact = id => {
+    dispatch(deleteContact(id));
   };
 
   const handleFilter = e => {
-    setFilter(e.target.value);
+    dispatch(setFilter(e.target.value));
   };
 
   const getFilteredContacts = () => {
@@ -49,14 +46,14 @@ export default function App() {
     return (
       <div>
         <h1>Phonebook</h1>
-        <ContactForm onSubmit={addContact} />
+        <ContactForm onSubmit={onAddContact} />
         <h2>Contacts</h2>
         {contacts.length > 0 ? (
           <>
             <Filter onFilterChange={handleFilter} value={filter} />
             <ContactList
               contacts={filteredContacts}
-              onDeleteContact={deleteContact}
+              onDeleteContact={onDeleteContact}
             />
           </>
         ) : (
