@@ -23,11 +23,15 @@ const contactsSlice = createSlice({
 
     setFilter(state, action) {
       state.filter = action.payload;
-    }
+    },
+    
+    handleFilterSlice: (state, actions) => {
+      state.filter = actions.payload;
+    },
   }
 });
 
 
-export const { addContact, deleteContact, setFilter } = contactsSlice.actions;
+export const { addContact, deleteContact, setFilter, handleFilterSlice } = contactsSlice.actions;
  
 export const contactsReducer = contactsSlice.reducer;
